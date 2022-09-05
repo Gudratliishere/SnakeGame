@@ -1,7 +1,6 @@
-package com.gudratli.snakegame;
+package com.gudratli.snakegame.panel;
 
-import com.gudratli.snakegame.component.Apple;
-import com.gudratli.snakegame.component.Snake;
+import com.gudratli.snakegame.Game;
 import com.gudratli.snakegame.config.Config;
 
 import javax.swing.*;
@@ -13,14 +12,10 @@ import java.awt.event.KeyEvent;
 
 public class GamePanel extends JPanel implements ActionListener
 {
-    private boolean running = false;
-    private Apple apple;
-    private Snake snake;
+    private Game game;
 
     public GamePanel ()
     {
-        apple = Apple.generateApple();
-        snake = new Snake();
         setPreferredSize(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         setBackground(Color.black);
         setFocusable(true);
@@ -31,22 +26,20 @@ public class GamePanel extends JPanel implements ActionListener
     @Override
     public void actionPerformed (ActionEvent e)
     {
-        if (running)
-        {
-            snake.checkApple(apple);
-            snake.move();
-            checkCollisions();
-        }
+        if (game.isRunning() && !game.isPaused())
+            game.performActions();
+
         repaint();
     }
 
     public void startGame ()
     {
-        running = true;
+        game = new Game();
         Timer timer = new Timer(Config.getDelay(), this);
         timer.start();
     }
 
+    @Override
     public void paintComponent (Graphics g)
     {
         super.paintComponent(g);
@@ -55,15 +48,13 @@ public class GamePanel extends JPanel implements ActionListener
 
     public void draw (Graphics g)
     {
-        if (running)
+        if (game.isRunning())
         {
             if (Config.getGrid())
                 drawGrid(g);
 
-            apple.draw(g);
-            snake.draw(g);
-
-            drawText(g);
+            game.drawGame(g);
+            drawScore(g);
         } else
             gameOver(g);
     }
@@ -77,10 +68,6 @@ public class GamePanel extends JPanel implements ActionListener
         }
     }
 
-    public void checkCollisions ()
-    {
-        running = !snake.intersects();
-    }
 
     public void gameOver (Graphics g)
     {
@@ -91,39 +78,28 @@ public class GamePanel extends JPanel implements ActionListener
         g.drawString("Game Over", (Config.getScreenWidth() - fontMetrics.stringWidth("Game Over")) / 2,
                 Config.getScreenHeight() / 2);
 
-        drawText(g);
+        drawScore(g);
     }
 
-    private void drawText (Graphics g)
+    private void drawScore (Graphics g)
     {
         g.setColor(Color.red);
         g.setFont(new Font("Ink Free", Font.BOLD, 40));
         FontMetrics fontMetricsScore = getFontMetrics(g.getFont());
-        g.drawString("Score: " + snake.getAppleEaten(),
-                (Config.getScreenWidth() - fontMetricsScore.stringWidth("Score: " + snake.getAppleEaten())) / 2,
+        g.drawString("Score: " + game.getScore(),
+                (Config.getScreenWidth() - fontMetricsScore.stringWidth("Score: " + game.getScore())) / 2,
                 g.getFont().getSize());
     }
 
-    public class MyKeyAdapter extends KeyAdapter
+    private class MyKeyAdapter extends KeyAdapter
     {
         @Override
         public void keyPressed (KeyEvent e)
         {
-            switch (e.getKeyCode())
-            {
-                case KeyEvent.VK_LEFT:
-                    snake.changeDirectionToLeft();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    snake.changeDirectionToRight();
-                    break;
-                case KeyEvent.VK_UP:
-                    snake.changeDirectionToTop();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    snake.changeDirectionToBottom();
-                    break;
-            }
+            game.changeDirection(e);
+
+            if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                game.togglePaused();
         }
     }
 }

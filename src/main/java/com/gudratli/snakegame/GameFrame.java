@@ -1,5 +1,7 @@
 package com.gudratli.snakegame;
 
+import com.gudratli.snakegame.panel.GamePanel;
+
 import javax.swing.*;
 
 public class GameFrame extends JFrame
