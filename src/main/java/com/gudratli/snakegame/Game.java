@@ -2,6 +2,7 @@ package com.gudratli.snakegame;
 
 import com.gudratli.snakegame.component.Apple;
 import com.gudratli.snakegame.component.Snake;
+import com.gudratli.snakegame.config.Sound;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -46,6 +47,8 @@ public class Game
     private void checkCollisions ()
     {
         running = !snake.intersects();
+        if (!running)
+            Sound.playGameOver();
     }
 
     public int getScore ()

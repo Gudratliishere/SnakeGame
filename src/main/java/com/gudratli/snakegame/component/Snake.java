@@ -1,6 +1,7 @@
 package com.gudratli.snakegame.component;
 
 import com.gudratli.snakegame.config.Config;
+import com.gudratli.snakegame.config.Sound;
 import com.gudratli.snakegame.enums.Direction;
 
 import java.awt.*;
@@ -62,6 +63,7 @@ public class Snake
             dots.add(new Dot());
             appleEaten++;
             apple.resetLocation();
+            Sound.playSnakeEatApple();
         }
     }
 

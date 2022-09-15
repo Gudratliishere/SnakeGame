@@ -2,6 +2,7 @@ package com.gudratli.snakegame.panel;
 
 import com.gudratli.snakegame.Game;
 import com.gudratli.snakegame.config.Config;
+import com.gudratli.snakegame.config.Sound;
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +100,10 @@ public class GamePanel extends JPanel implements ActionListener
             game.changeDirection(e);
 
             if (e.getKeyCode() == KeyEvent.VK_SPACE)
-                game.togglePaused();
+                if (game.isRunning())
+                    game.togglePaused();
+                else
+                    game = new Game();
         }
     }
 }
